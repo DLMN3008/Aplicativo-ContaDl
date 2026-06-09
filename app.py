@@ -1,5 +1,5 @@
-import streamlit as st
 import requests
+import streamlit as st
 
 st.title("ERP Contable Perú")
 
@@ -11,13 +11,18 @@ total = st.number_input("Total")
 
 if st.button("Procesar"):
 
-    r = requests.post(
-        f"http://localhost:8000/operacion/{tipo}",
-        json={
-            "subtotal": subtotal,
-            "igv": igv,
-            "total": total
-        }
-    )
+    try:
+        r = requests.post(
+            f"http://127.0.0.1:8000/operacion/{tipo}",
+            json={
+                "subtotal": subtotal,
+                "igv": igv,
+                "total": total
+            },
+            timeout=5
+        )
 
-    st.json(r.json())
+        st.json(r.json())
+
+    except requests.exceptions.ConnectionError:
+        st.error("❌ No se pudo conectar con la API. ¿Está corriendo FastAPI?")
